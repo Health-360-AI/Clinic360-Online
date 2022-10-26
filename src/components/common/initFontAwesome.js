@@ -1,0 +1,82 @@
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faPowerOff,
+  faUser,
+  faUserCircle,
+  faSignInAlt,
+  faAngleLeft,
+  faAngleRight,
+  faAngleUp,
+  faAngleDown,
+  faPlus,
+  faPlusCircle,
+  faChartLine,
+  faUsers,
+  faCog,
+  faHome,
+  faCheckCircle,
+  faTimesCircle,
+  faMicrophone,
+  faEllipsisV,
+  faPlayCircle,
+  faPills,
+  faAddressCard,
+  faChair,
+  faUniversalAccess,
+  faExclamationCircle,
+  faHdd,
+  faDownload,
+  faSync,
+  faFileInvoiceDollar,
+  faBell,
+  faBolt,
+  faArrowLeft,
+  faCaretRight,
+  faCaretDown,
+  faCalendarAlt,
+  faPauseCircle,
+  faList,
+  faPrint,
+} from "@fortawesome/free-solid-svg-icons";
+
+function initFontAwesome() {
+  library.add(faUserCircle);
+  library.add(faUser);
+  library.add(faPowerOff);
+  library.add(faSignInAlt);
+  library.add(faAngleRight);
+  library.add(faAngleLeft);
+  library.add(faAngleUp);
+  library.add(faAngleDown);
+  library.add(faPlus);
+  library.add(faPlusCircle);
+  library.add(faCog);
+  library.add(faChartLine);
+  library.add(faUsers);
+  library.add(faHome);
+  library.add(faCheckCircle);
+  library.add(faTimesCircle);
+  library.add(faMicrophone);
+  library.add(faEllipsisV);
+  library.add(faPlayCircle);
+  library.add(faPills);
+  library.add(faChair);
+  library.add(faAddressCard);
+  library.add(faUniversalAccess);
+  library.add(faExclamationCircle);
+  library.add(faHdd);
+  library.add(faDownload);
+  library.add(faSync);
+  library.add(faFileInvoiceDollar);
+  library.add(faBell);
+  library.add(faBolt);
+  library.add(faArrowLeft);
+  library.add(faCaretRight);
+  library.add(faCaretDown);
+  library.add(faCalendarAlt);
+  library.add(faPauseCircle);
+  library.add(faList);
+  library.add(faPrint);
+}
+
+export default initFontAwesome;

@@ -1,0 +1,16 @@
+{
+  "news": [
+    "Added Connection To Pharmacy",
+    "Added Check Drug Interaction in Short Visit.",
+    "Added Previous Visits Buttonin long and short visits.",
+    "Added Patient's Info in long and short visits.",
+    "Added Vital Signs in Short Visit",
+    "Added BMI Tracker in Short Visit.",
+    "Changed Login and Register Interfaces",
+    "Fixed issue with times and types creating in Rx of Long Visit.",
+    "Fixed issue with Margins in printing of Short Visit.",
+    "Fixed issue with Gyne Info Not Showing.",
+    "Fixed search by Patient ID.",
+    "Fixed stuck tips on icons of bottom navbar."
+  ]
+}
