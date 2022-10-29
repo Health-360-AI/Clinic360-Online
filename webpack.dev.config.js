@@ -55,7 +55,7 @@ module.exports = {
   },
   target: "electron-renderer",
   plugins: [
-    new HtmlWebpackPlugin({ title: "Clinic-360" }),
+    new HtmlWebpackPlugin({ title: "Clinic360-Online" }),
     new webpack.DefinePlugin({
       "process.env.API_URL": JSON.stringify("http://64.225.88.42:8000/api/v1"),
       "process.env.API_URL_V": JSON.stringify("http://64.225.88.42:8000"),

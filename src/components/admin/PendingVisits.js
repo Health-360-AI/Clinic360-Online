@@ -43,13 +43,15 @@ function PendingVisits({
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     socket.emit("pending-visits", {
-      token: `Bearer ${localStorage.getItem("token")}`,
+      token: `${localStorage.getItem("token")}`,
+      role: 0,
       page: 1,
       size: 100,
       search: null,
     });
     socket.emit("unfinished-visits", {
-      token: `Bearer ${localStorage.getItem("token")}`,
+      token: `${localStorage.getItem("token")}`,
+      role: 0,
       page: 1,
       size: 100,
       search: null,
@@ -167,14 +169,14 @@ function PendingVisits({
       setPatient({ ...pendingVisit, id: pendingVisit.patient_id });
       setDataToChange({ id: pendingVisit.visit_id });
       socket.emit("pending-visits", {
-        token: `Bearer ${localStorage.getItem("token")}`,
+        token: `${localStorage.getItem("token")}`,
         role: 0,
         page: 1,
         size: 100,
         search: null,
       });
       socket.emit("unfinished-visits", {
-        token: `Bearer ${localStorage.getItem("token")}`,
+        token: `${localStorage.getItem("token")}`,
         role: 0,
         page: 1,
         size: 100,
@@ -208,14 +210,14 @@ function PendingVisits({
       setDataToChange({ id: pendingVisit.visit_id });
       let xx = await getVisit(pendingVisit);
       socket.emit("pending-visits", {
-        token: `Bearer ${localStorage.getItem("token")}`,
+        token: `${localStorage.getItem("token")}`,
         role: 0,
         page: 1,
         size: 100,
         search: null,
       });
       socket.emit("unfinished-visits", {
-        token: `Bearer ${localStorage.getItem("token")}`,
+        token: `${localStorage.getItem("token")}`,
         role: 0,
         page: 1,
         size: 100,

@@ -46,7 +46,7 @@ module.exports = {
     // new webpackBundleAnalyzer.BundleAnalyzerPlugin({ analyzerMode: "static" }),
 
     new HtmlWebpackPlugin({
-      title: "Clinic-360",
+      title: "Clinic360-Online",
       minify: {
         // see https://github.com/kangax/html-minifier#options-quick-reference
         removeComments: true,
