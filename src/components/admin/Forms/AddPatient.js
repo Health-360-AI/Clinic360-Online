@@ -351,7 +351,7 @@ function AddPatient({ page, dataToChange, getPatients, main }) {
   const getFilesNum = async () => {
     try {
       const response = await fetch(
-        `${apiUrl}/patients/files/${dataToSend.id}`,
+        `${apiUrl}/patients/${dataToSend.id}/files`,
         {
           method: "GET",
           headers: {
@@ -378,7 +378,7 @@ function AddPatient({ page, dataToChange, getPatients, main }) {
   const getFile = async (num) => {
     try {
       const response = await fetch(
-        `${apiUrl}/patients/files/${dataToSend.id}?num=${num}`,
+        `${apiUrl}/patients/${dataToSend.id}/files?num=${num}`,
         {
           method: "GET",
           headers: {

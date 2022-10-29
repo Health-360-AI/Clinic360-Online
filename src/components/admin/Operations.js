@@ -188,6 +188,9 @@ function Operations({
     try {
       const response = await fetch(`${apiUrl}/places`, {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       const responseData = await response.json();
       // setData({ ...data, marital_statuses: responseData.marital_statuses });

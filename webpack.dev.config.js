@@ -57,12 +57,14 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({ title: "Clinic-360" }),
     new webpack.DefinePlugin({
-      "process.env.API_URL": JSON.stringify("http://localhost:8000/api/v1"),
-      "process.env.API_URL_V": JSON.stringify("http://localhost:8000"),
+      "process.env.API_URL": JSON.stringify("http://64.225.88.42:8000/api/v1"),
+      "process.env.API_URL_V": JSON.stringify("http://64.225.88.42:8000"),
       "process.env.HEALTH360_GATEWAY_V": JSON.stringify(
-        "http://localhost:8050/api/v1"
+        "https://whale-app-lw8na.ondigitalocean.app/api/v1"
       ),
-      "process.env.HEALTH360_GATEWAY": JSON.stringify("http://localhost:8050"),
+      "process.env.HEALTH360_GATEWAY": JSON.stringify(
+        "https://whale-app-lw8na.ondigitalocean.app"
+      ),
       "process.env.NODE_ENV": JSON.stringify("development"),
       "process.env.Domain": JSON.stringify("iclinic.eu.auth0.com"),
       "process.env.ClientId": JSON.stringify(

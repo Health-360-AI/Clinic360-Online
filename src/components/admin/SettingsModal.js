@@ -157,8 +157,8 @@ function SettingsModal(props) {
   };
 
   useEffect(() => {
-    getGeneral();
-    getSubscrption();
+    // getGeneral();
+    // getSubscrption();
     refreshPrinters();
     ipcRenderer.on("send-printers", (e, r) => {
       setPrinters(r);
@@ -385,25 +385,6 @@ function SettingsModal(props) {
                     <a
                       href="#"
                       className={"nav_link "}
-                      onClick={() => setSettingsPage("BackupPage")}
-                    >
-                      <FontAwesomeIcon
-                        icon="hdd"
-                        className={"nav-icon "}
-                        size="2x"
-                      />
-                      <span
-                        className={`nav_name ${
-                          settingsPage == "BackupPage" ? "active" : ""
-                        }`}
-                        id="nav-text"
-                      >
-                        Backup
-                      </span>
-                    </a>
-                    <a
-                      href="#"
-                      className={"nav_link "}
                       onClick={() => setSettingsPage("ListsPage")}
                     >
                       <FontAwesomeIcon
@@ -472,7 +453,7 @@ function SettingsModal(props) {
                         Visit
                       </span>
                     </a>
-                    <a
+                    {/* <a
                       href="#"
                       className={"nav_link "}
                       onClick={() => setSettingsPage("ConnectionsPage")}
@@ -490,7 +471,7 @@ function SettingsModal(props) {
                       >
                         Connections
                       </span>
-                    </a>
+                    </a> */}
                     <a
                       href="#"
                       className={"nav_link "}

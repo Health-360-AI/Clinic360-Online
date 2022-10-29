@@ -20,7 +20,7 @@ Electron, React, PostCSS and Webpack app.
 #### Clone this repo
 
 ```
-git clone https://github.com/sajad321/iclinic-frontend.git
+git clone https://github.com/Health-36-AI/Clinic360-Online.git
 ```
 
 #### Install dependencies
@@ -34,15 +34,6 @@ or
 ```
 yarn
 ```
-
-### Pre-Usage
-
-#### Install Modules
-
-```
-npm i
-```
-
 
 ### Usage
 

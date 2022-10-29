@@ -1,6 +1,6 @@
 {
   "name": "clinic360-online",
-  "version": "1.10.4",
+  "version": "1.10.5",
   "description": "System for managing the clinic of a doctor",
   "private": true,
   "repository": {
@@ -173,10 +173,7 @@
     "extraResources": [
       "Settings.json",
       "WhatsNew.json",
-      "py_main",
       "log.ini",
-      "db.sqlite3",
-      "chart-data",
       "VC_redist.x64.exe"
     ],
     "asarUnpack": [

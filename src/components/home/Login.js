@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 
-const apiUrl_V = process.env.API_URL_V;
+const apiUrl = process.env.API_URL;
 const HEALTH360_GATEWAY_V = process.env.HEALTH360_GATEWAY_V;
 
 async function loginOnlineUser(credentials) {
@@ -33,7 +33,7 @@ async function loginOnlineUser(credentials) {
 }
 
 async function postSetup(token) {
-  return fetch(`${apiUrl_V}/setup`, {
+  return fetch(`${apiUrl}/setup`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

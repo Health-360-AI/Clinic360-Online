@@ -813,6 +813,7 @@ function AddVisit({
         }
       );
       const responseData = await response.json();
+      console.log(responseData);
       handleAllergiesSend();
     } catch (error) {
       console.log(error.message);
@@ -898,7 +899,7 @@ function AddVisit({
       dataToSend.investigations[i].photos.map(
         (photo) =>
           photo.received &&
-          formData.append("file", photo.image, photo.image.type.split("/")[1])
+          formData.append("files", photo.image, photo.image.type.split("/")[1])
       );
 
       formData.append("invx_id", dataToSend.investigations[i].invx_id);

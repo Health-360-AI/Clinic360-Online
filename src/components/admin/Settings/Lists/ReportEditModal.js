@@ -69,7 +69,10 @@ export default function ReportEditModal(props) {
         }`,
         {
           method: props.dataToChange.id ? "PATCH" : "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
           body: JSON.stringify({
             title: dataToSend.title,
             template: dataToSend.template,

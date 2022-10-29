@@ -358,7 +358,7 @@ function AddOperation({
   const getFilesNum = async () => {
     try {
       const response = await fetch(
-        `${apiUrl}/operations/files/${dataToSend.id}`,
+        `${apiUrl}/operations/${dataToSend.id}/files`,
         {
           method: "GET",
           headers: {
@@ -386,7 +386,7 @@ function AddOperation({
   const getFile = async (num) => {
     try {
       const response = await fetch(
-        `${apiUrl}/operations/files/${dataToSend.id}?num=${num}`,
+        `${apiUrl}/operations/${dataToSend.id}/files?num=${num}`,
         {
           method: "GET",
           headers: {
@@ -515,7 +515,7 @@ function AddOperation({
           console.log(pair[0] + ", " + pair[1]);
         }
         const responseImg = await fetch(
-          `${apiUrl}/patients/files/${patient.id}?operation_id=${responseData.operation_id}`,
+          `${apiUrl}/patients/${patient.id}/files?operation_id=${responseData.operation_id}`,
           {
             method: "PATCH",
             headers: {

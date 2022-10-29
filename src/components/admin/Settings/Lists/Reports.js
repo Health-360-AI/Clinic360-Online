@@ -27,6 +27,9 @@ export default function Reports(props) {
         }`,
         {
           method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       const responseData = await response.json();
@@ -46,7 +49,8 @@ export default function Reports(props) {
       const response = await fetch(`${apiUrl}/reports/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 

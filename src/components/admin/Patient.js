@@ -94,7 +94,7 @@ function Patient({
   }, []);
   const getFilesNum = async () => {
     try {
-      const response = await fetch(`${apiUrl}/patients/files/${patient.id}`, {
+      const response = await fetch(`${apiUrl}/patients/${patient.id}/files`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -120,7 +120,7 @@ function Patient({
   const getFile = async (num) => {
     try {
       const response = await fetch(
-        `${apiUrl}/patients/files/${patient.id}?num=${num}`,
+        `${apiUrl}/patients/${patient.id}/files?num=${num}`,
         {
           method: "GET",
           headers: {

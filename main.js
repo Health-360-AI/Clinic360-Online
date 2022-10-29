@@ -129,37 +129,11 @@ async function logout() {
   }
 }
 
-//--------------------------Section 2--------------------------------
-
-let backend =
-  process.platform !== "darwin"
-    ? path.join(process.cwd(), "resources/py_main/main")
-    : "/Applications/clinic360.app/Contents/Resources/py_main/main";
 let VC_CPP =
   process.platform !== "darwin"
     ? path.join(process.cwd(), "resources/VC_redist.x64.exe")
     : "/Applications/clinic360.app/Contents/Resources/VC_redist.x64.exe";
 var execfile = require("child_process").execFile;
-// let pid2;
-let pid = execfile(
-  backend,
-  {
-    windowsHide: true,
-    stdio: "inherit",
-  },
-  (err, stdout, stderr) => {
-    if (err) {
-      console.log(err);
-    }
-    if (stdout) {
-      console.log(stdout);
-    }
-    if (stderr) {
-      console.log(stderr);
-    }
-  }
-);
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow, AuthWindow, loginWindow;
@@ -238,29 +212,6 @@ function createWindow() {
         }
 
         fs.copyFile(SETTINGS_IN_RESOURCES, SETTINGS_IN_LOCAL, function (err) {
-          // done. it tried fs.rename first, and then falls back to
-          // piping the source file to the dest file and then unlinking
-          // the source file.
-
-          if (err) return console.error(err);
-          console.log("Copied success!");
-        });
-      });
-    }
-  });
-  fs.access(CHARTDATA_IN_LOCAL, fs.F_OK, (err) => {
-    if (err) {
-      fs.access(CHARTDATA_IN_RESOURCES, fs.F_OK, (err) => {
-        if (err) {
-          console.error(err.message);
-          return;
-        }
-
-        if (!fs.existsSync(CLINIC360_IN_LOCAL)) {
-          fs.mkdirSync(CLINIC360_IN_LOCAL);
-        }
-
-        fs.copyFile(CHARTDATA_IN_RESOURCES, CHARTDATA_IN_LOCAL, function (err) {
           // done. it tried fs.rename first, and then falls back to
           // piping the source file to the dest file and then unlinking
           // the source file.
@@ -1275,17 +1226,7 @@ app.on("window-all-closed", () => {
     //   .catch((e) => {
     //     console.log(e);
     //   });
-    get(`${apiUrl}/shutdown`)
-      .then(() => {
-        console.log("ended");
-        process.kill(pid.pid, "SIGINT");
-        app.quit();
-      })
-      .catch((e) => {
-        console.log(e);
-        process.kill(pid.pid, "SIGINT");
-        app.quit();
-      });
+    app.quit();
   }
 });
 app.disableHardwareAcceleration();
@@ -1353,16 +1294,7 @@ if (dev && process.argv.indexOf("--noDevServer") === -1) {
       //   .catch((e) => {
       //     console.log(e);
       //   });
-      get(`${apiUrl}/shutdown`)
-        .then(() => {
-          console.log("ended");
-          process.kill(pid.pid, "SIGINT");
-          autoUpdater.quitAndInstall();
-        })
-        .catch((e) => {
-          console.log(e);
-          autoUpdater.quitAndInstall();
-        });
+      autoUpdater.quitAndInstall();
     }
   });
 }
