@@ -34,7 +34,7 @@ async function loginOnlineUser(credentials) {
 
 async function postSetup(token) {
   return fetch(`${apiUrl}/setup`, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -42,6 +42,7 @@ async function postSetup(token) {
   })
     .then(async (data) => {
       let d = await data.json();
+      console.log(d);
       if (d.success) {
         return d;
       } else {

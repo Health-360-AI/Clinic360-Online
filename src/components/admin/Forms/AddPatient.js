@@ -442,7 +442,7 @@ function AddPatient({ page, dataToChange, getPatients, main }) {
           console.log(pair[0] + ", " + pair[1]);
         }
         const responseImg = await fetch(
-          `${apiUrl}/patients/${responseData.patient_id}/files`,
+          `${apiUrl}/patients/files/${responseData.patient_id}`,
           {
             method: "PATCH",
             headers: {

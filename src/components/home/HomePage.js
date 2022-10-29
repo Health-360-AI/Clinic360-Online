@@ -101,6 +101,10 @@ const HomePage = (props) => {
           token: `${localStorage.getItem("token")}`,
           doctor_id: responseData.doctor.id,
         });
+        socket.emit("doctor_sid", {
+          token: `${localStorage.getItem("token")}`,
+          doctor_id: responseData.doctor.id,
+        });
       }
     } catch (error) {
       console.log(error.message);

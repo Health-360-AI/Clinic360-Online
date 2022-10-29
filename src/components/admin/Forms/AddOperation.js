@@ -515,7 +515,7 @@ function AddOperation({
           console.log(pair[0] + ", " + pair[1]);
         }
         const responseImg = await fetch(
-          `${apiUrl}/patients/${patient.id}/files?operation_id=${responseData.operation_id}`,
+          `${apiUrl}/patients/files/${patient.id}?operation_id=${responseData.operation_id}`,
           {
             method: "PATCH",
             headers: {
