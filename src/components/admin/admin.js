@@ -114,7 +114,22 @@ function admin({
       console.log(error.message);
     }
   };
-
+  const emitSocket = () => {
+    socket.emit("pending-visits", {
+      token: `${localStorage.getItem("token")}`,
+      role: 0,
+      page: 1,
+      size: 100,
+      search: null,
+    });
+    socket.emit("unfinished-visits", {
+      token: `${localStorage.getItem("token")}`,
+      role: 0,
+      page: 1,
+      size: 100,
+      search: null,
+    });
+  };
   useEffect(() => {
     loadSpeechRecognition();
     let timer = setInterval(() => {
@@ -140,6 +155,7 @@ function admin({
       setPendingVisits(data.pending_visits);
     });
     socket.on("receive-unfinished-visits", (data) => {
+      console.log(data);
       setUnfinishedVisit(data.unfinished_visits);
     });
     return () => {
@@ -481,6 +497,7 @@ function admin({
                   <Main
                     handleOperationsButton={handleOperationsButton}
                     setShowPending={setShowPending}
+                    emitSocket={emitSocket}
                   />
                 </div>
               </>

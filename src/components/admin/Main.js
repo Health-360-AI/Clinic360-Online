@@ -27,7 +27,7 @@ const barOptions = {
   maintainAspectRatio: false,
 };
 
-function Main({ handleOperationsButton, setShowPending }) {
+function Main({ handleOperationsButton, setShowPending, emitSocket }) {
   const [main, setMain] = useState({
     total_patients: 0,
     new_patients: 0,
@@ -142,6 +142,7 @@ function Main({ handleOperationsButton, setShowPending }) {
                 </div>
               </div>
             </div>
+            <button onClick={emitSocket}>Click</button>
             <div className="col-3 p-2">
               <div className="card card-common bg-primary">
                 <div className="card-body">

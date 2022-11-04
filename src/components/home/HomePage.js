@@ -13,13 +13,9 @@ import { io } from "socket.io-client";
 import Register from "./Register";
 
 const apiUrl = process.env.API_URL;
-const apiUrl_V = process.env.API_URL_V;
 const HEALTH360_GATEWAY = process.env.HEALTH360_GATEWAY;
 const HEALTH360_GATEWAY_V = process.env.HEALTH360_GATEWAY_V;
 
-const socket = io.connect(apiUrl_V, {
-  transports: ["websocket", "polling", "flashsocket"],
-});
 const socketGateway = io.connect(HEALTH360_GATEWAY, {
   transports: ["websocket", "polling", "flashsocket"],
 });
@@ -56,34 +52,19 @@ const HomePage = (props) => {
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
 
-  useEffect(() => {
-    socket.on("broadcast", (data) => {
-      console.log(data);
-      if (data !== null) {
-        setMessageReceived(data.message);
-        // setMessageHistory((prev) => prev.concat(lastJsonMessage));
-        // console.log(lastJsonMessage);
-        if (data.user != 0)
-          addResponseMessage(new Buffer(data.message, "base64").toString());
-      }
-    });
-  }, [socket]);
+  // useEffect(() => {
+  //   socket.on("broadcast", (data) => {
+  //     console.log(data);
+  //     if (data !== null) {
+  //       setMessageReceived(data.message);
+  //       // setMessageHistory((prev) => prev.concat(lastJsonMessage));
+  //       // console.log(lastJsonMessage);
+  //       if (data.user != 0)
+  //         addResponseMessage(new Buffer(data.message, "base64").toString());
+  //     }
+  //   });
+  // }, [socket]);
 
-  const getMain = async () => {
-    try {
-      const response = await fetch(`${apiUrl_V}/main`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      let responseData = await response.json();
-      setLoading(false);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
   const getUserInfo = async () => {
     try {
       const response = await fetch(
@@ -98,10 +79,6 @@ const HomePage = (props) => {
 
       if (responseData.success) {
         socketGateway.emit("doctor_sid", {
-          token: `${localStorage.getItem("token")}`,
-          doctor_id: responseData.doctor.id,
-        });
-        socket.emit("doctor_sid", {
           token: `${localStorage.getItem("token")}`,
           doctor_id: responseData.doctor.id,
         });
@@ -208,18 +185,18 @@ const HomePage = (props) => {
     addResponseMessage("Welcome to this awesome chat!");
   }, []);
 
-  const handleClickSendMessage = useCallback((message) => {
-    socket.emit("broadcast", {
-      message: new Buffer(message).toString("base64"),
-      user: 0,
-    });
-    // sendJsonMessage({ message, user: 0 });
-    // addResponseMessage(message);
-  }, []);
-  const handleClickBell = () => {
-    socket.emit("broadcast", { buzz: 1, user: 0 });
-  };
-  if (interv != null && !loading) clearInterval(interv);
+  // const handleClickSendMessage = useCallback((message) => {
+  //   socket.emit("broadcast", {
+  //     message: new Buffer(message).toString("base64"),
+  //     user: 0,
+  //   });
+  //   // sendJsonMessage({ message, user: 0 });
+  //   // addResponseMessage(message);
+  // }, []);
+  // const handleClickBell = () => {
+  //   socket.emit("broadcast", { buzz: 1, user: 0 });
+  // };
+
   if (loading) {
     return (
       <div
@@ -259,7 +236,7 @@ const HomePage = (props) => {
             page={page}
             setPage={setPage}
             setRemaining={setRemaining}
-            socket={socket}
+            socket={socketGateway}
             socketGateway={socketGateway}
           />
           <div className={`notification-square`}>

@@ -146,6 +146,7 @@ function PendingVisits({
         summary: responseData.summary,
       });
       // console.log(dataToSend);
+      return responseData;
     } catch (error) {
       console.log(error.message);
     }
