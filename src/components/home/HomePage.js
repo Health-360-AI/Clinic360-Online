@@ -239,7 +239,7 @@ const HomePage = (props) => {
             socket={socketGateway}
             socketGateway={socketGateway}
           />
-          <div className={`notification-square`}>
+          {/* <div className={`notification-square`}>
             <div className="bell-div" onClick={handleClickBell}>
               <FontAwesomeIcon icon="bell" className="bell" />
             </div>
@@ -254,7 +254,7 @@ const HomePage = (props) => {
               emojis
               showBadge
             />
-          </div>
+          </div> */}
         </>
       );
     } else {

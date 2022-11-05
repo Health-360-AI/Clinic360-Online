@@ -142,7 +142,7 @@ function Main({ handleOperationsButton, setShowPending, emitSocket }) {
                 </div>
               </div>
             </div>
-            <button onClick={emitSocket}>Click</button>
+            {/* <button onClick={emitSocket}>Click</button> */}
             <div className="col-3 p-2">
               <div className="card card-common bg-primary">
                 <div className="card-body">
