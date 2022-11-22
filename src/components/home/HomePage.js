@@ -17,6 +17,9 @@ const HEALTH360_GATEWAY = process.env.HEALTH360_GATEWAY;
 const HEALTH360_GATEWAY_V = process.env.HEALTH360_GATEWAY_V;
 
 const socketGateway = io.connect(HEALTH360_GATEWAY, {
+  auth: {
+    token: localStorage.getItem("token"),
+  },
   transports: ["websocket", "polling", "flashsocket"],
 });
 

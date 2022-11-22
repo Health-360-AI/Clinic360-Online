@@ -19,6 +19,10 @@ import BMITrackerModal from "./BMITrackerModal";
 import Start from "./VisitModalComponents/Start";
 import PrescriptionController from "./VisitModalComponents/PrescriptionController";
 import InvestigationsController from "./VisitModalComponents/InvestigationsController";
+import OpthalmologyRxModal from "./Opthalmology/OpthalmologyRxModal";
+import OpthalmologyExaminationController from "./Opthalmology/OpthalmologyExaminationController";
+import OpthalmologyHxController from "./Opthalmology/OpthalmologyHxController";
+import OpthalmologyVAController from "./Opthalmology/OpthalmologyVAController";
 
 let fs = require("fs");
 const path = require("path");
@@ -86,6 +90,10 @@ export function VisitModal({
   const [investigations, setInvestigations] = useState([]);
   const [imaging, setImaging] = useState([]);
 
+  const [surgeries, setSurgeries] = useState([]);
+
+  const [family_members, setFamilyMembers] = useState([]);
+
   const [showDelete, setShowDelete] = useState(true);
 
   const [photos, setPhotos] = useState([]);
@@ -103,6 +111,13 @@ export function VisitModal({
   const [showPatientInfoModal, setShowPatientInfoModal] = useState(false);
   const [showVSModal, setShowVSModal] = useState(false);
   const [showBTModal, setShowBTModal] = useState(false);
+  const [showOpthalmologyHxModal, setShowOpthalmologyHxModal] = useState(false);
+  const [showOpthalmologyVAModal, setShowOpthalmologyVAModal] = useState(false);
+  const [showOpthalmologyRxModal, setShowOpthalmologyRxModal] = useState(false);
+  const [
+    showOpthalmologyExaminationModal,
+    setShowOpthalmologyExaminationModal,
+  ] = useState(false);
 
   const [component1Ref, setComponent1Ref] = useState(null);
   const printTrigger = () => {
@@ -179,11 +194,16 @@ export function VisitModal({
     getTradeDrugs();
     getTypes();
     getTimes();
+
+    getSurgeries();
+
+    getFamilyMembers();
     getBgPhoto();
     getHeaderPhoto();
     getFooterPhoto();
     if (dataToChange.id != "") {
       setDataToSend({
+        ...visit,
         visit_id: dataToChange.id,
         chief_complaint_id: visit.chief_complaint_id,
         investigations: visit.investigations,
@@ -218,6 +238,8 @@ export function VisitModal({
         rr: "",
         temp: "",
         spo2: "",
+        family_history: [],
+        past_surgical_history: [],
       });
       setSpeech({
         ...speech,
@@ -288,6 +310,43 @@ export function VisitModal({
     }
   };
 
+  const getSurgeries = async (search, callback) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/surgeries${
+          search != " " && search != undefined ? "?search=" + search : ""
+        }`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const responseData = await response.json();
+      setSurgeries(responseData.surgeries);
+      if (callback) {
+        callback(responseData.surgeries);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const getFamilyMembers = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/family-members`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const responseData = await response.json();
+      setFamilyMembers(responseData.family_members);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   const getInvestigations = async () => {
     try {
       const response = await fetch(`${apiUrl}/investigations`, {
@@ -538,7 +597,6 @@ export function VisitModal({
         {
           method:
             dataToSend.investigations[i].id != undefined ? "PATCH" : "POST",
-          // headers: { "Content-Type": "multipart/form-data" },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -584,7 +642,7 @@ export function VisitModal({
       dataToSend.investigations[i].photos.map(
         (photo) =>
           photo.received &&
-          formData.append("files", photo.image, photo.image.type.split("/")[1])
+          formData.append("file", photo.image, photo.image.type.split("/")[1])
       );
 
       formData.append("invx_id", dataToSend.investigations[i].invx_id);
@@ -606,7 +664,6 @@ export function VisitModal({
           {
             method:
               dataToSend.investigations[i].id != undefined ? "PATCH" : "POST",
-            // headers: { "Content-Type": "multipart/form-data" },
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
@@ -614,6 +671,7 @@ export function VisitModal({
           }
         );
         const responseData = await response.json();
+        console.log(responseData);
         let invxx = dataToSend.investigations;
         invxx[i].received = false;
         invxx[i].files_loc = undefined;
@@ -641,6 +699,255 @@ export function VisitModal({
             trade_drugs: dataToSend.trade_drugs,
             scientific_drugs: dataToSend.scientific_drugs,
             prescription_note: dataToSend.prescription_note,
+          }),
+        }
+      );
+      const responseData = await response.json();
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Failed");
+    }
+  };
+  const saveOpthalmologyHx = async (visit_id) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/patients/${patient.id}/visits/${visit_id}/ocular-hx`,
+        {
+          method: Object.keys(dataToChange).length != 0 ? "PATCH" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            optical_hx_last_reflection: dataToSend.optical_hx_last_reflection,
+            optical_hx_reflection_stability:
+              dataToSend.optical_hx_reflection_stability,
+            optical_hx_glasses_duration: dataToSend.optical_hx_glasses_duration,
+            optical_hx_glasses_change_frequency:
+              dataToSend.optical_hx_glasses_change_frequency,
+            optical_hx_contact_lens_duration:
+              dataToSend.optical_hx_contact_lens_duration,
+            optical_hx_usage: dataToSend.optical_hx_usage,
+            optical_hx_uses: dataToSend.optical_hx_uses,
+            optical_hx_type: dataToSend.optical_hx_type,
+            optical_hx_last_time_weared: dataToSend.optical_hx_last_time_weared,
+            ocular_family_hx: dataToSend.family_history,
+            ocular_surgical_hx: dataToSend.past_surgical_history,
+          }),
+        }
+      );
+      const responseData = await response.json();
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Failed");
+    }
+  };
+  const saveOpthalmologyVA = async (visit_id) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/patients/${patient.id}/visits/${visit_id}/ocular-va-iop`,
+        {
+          method: Object.keys(dataToChange).length != 0 ? "PATCH" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            oculus_sinister_sphere_auto_refraction:
+              dataToSend.oculus_sinister_sphere_auto_refraction,
+            oculus_sinister_cylinder_auto_refraction:
+              dataToSend.oculus_sinister_cylinder_auto_refraction,
+            oculus_sinister_axis_auto_refraction:
+              dataToSend.oculus_sinister_axis_auto_refraction,
+            oculus_dextrus_sphere_auto_refraction:
+              dataToSend.oculus_dextrus_sphere_auto_refraction,
+            oculus_dextrus_cylinder_auto_refraction:
+              dataToSend.oculus_dextrus_cylinder_auto_refraction,
+            oculus_dextrus_axis_auto_refraction:
+              dataToSend.oculus_dextrus_axis_auto_refraction,
+            oculus_sinister_k1: dataToSend.oculus_sinister_k1,
+            oculus_sinister_k1_axis: dataToSend.oculus_sinister_k1_axis,
+            oculus_sinister_k2: dataToSend.oculus_sinister_k2,
+            oculus_sinister_k2_axis: dataToSend.oculus_sinister_k2_axis,
+            oculus_dextrus_k1: dataToSend.oculus_dextrus_k1,
+            oculus_dextrus_k1_axis: dataToSend.oculus_dextrus_k1_axis,
+            oculus_dextrus_k2: dataToSend.oculus_dextrus_k2,
+            oculus_dextrus_k2_axis: dataToSend.oculus_dextrus_k2_axis,
+            oculus_sinister_corneal_astigmatism:
+              dataToSend.oculus_sinister_corneal_astigmatism,
+            oculus_dextrus_corneal_astigmatism:
+              dataToSend.oculus_dextrus_corneal_astigmatism,
+            oculus_sinister_ucva: dataToSend.oculus_sinister_ucva,
+            oculus_dextrus_ucva: dataToSend.oculus_dextrus_ucva,
+            oculus_sinister_pinhole: dataToSend.oculus_sinister_pinhole,
+            oculus_dextrus_pinhole: dataToSend.oculus_dextrus_pinhole,
+            oculus_sinister_visual_acuity_old:
+              dataToSend.oculus_sinister_visual_acuity_old,
+            oculus_sinister_sphere_old: dataToSend.oculus_sinister_sphere_old,
+            oculus_sinister_cylinder_old:
+              dataToSend.oculus_sinister_cylinder_old,
+            oculus_sinister_axis_old: dataToSend.oculus_sinister_axis_old,
+            oculus_dextrus_visual_acuity_old:
+              dataToSend.oculus_dextrus_visual_acuity_old,
+            oculus_dextrus_axis_old: dataToSend.oculus_dextrus_axis_old,
+            oculus_dextrus_sphere_old: dataToSend.oculus_dextrus_sphere_old,
+            oculus_dextrus_cylinder_old: dataToSend.oculus_dextrus_cylinder_old,
+            oculus_sinister_visual_acuity_manifest_refraction:
+              dataToSend.oculus_sinister_visual_acuity_manifest_refraction,
+            oculus_sinister_sphere_manifest_refraction:
+              dataToSend.oculus_sinister_sphere_manifest_refraction,
+            oculus_sinister_cylinder_manifest_refraction:
+              dataToSend.oculus_sinister_cylinder_manifest_refraction,
+            oculus_sinister_axis_manifest_refraction:
+              dataToSend.oculus_sinister_axis_manifest_refraction,
+            oculus_dextrus_visual_acuity_manifest_refraction:
+              dataToSend.oculus_dextrus_visual_acuity_manifest_refraction,
+            oculus_dextrus_sphere_manifest_refraction:
+              dataToSend.oculus_dextrus_sphere_manifest_refraction,
+            oculus_dextrus_cylinder_manifest_refraction:
+              dataToSend.oculus_dextrus_cylinder_manifest_refraction,
+            oculus_dextrus_axis_manifest_refraction:
+              dataToSend.oculus_dextrus_axis_manifest_refraction,
+            oculus_sinister_visual_acuity_cyclorefraction:
+              dataToSend.oculus_sinister_visual_acuity_cyclorefraction,
+            oculus_sinister_sphere_cyclorefraction:
+              dataToSend.oculus_sinister_sphere_cyclorefraction,
+            oculus_sinister_cylinder_cyclorefraction:
+              dataToSend.oculus_sinister_cylinder_cyclorefraction,
+            oculus_sinister_axis_cyclorefraction:
+              dataToSend.oculus_sinister_axis_cyclorefraction,
+            oculus_dextrus_visual_acuity_cyclorefraction:
+              dataToSend.oculus_dextrus_visual_acuity_cyclorefraction,
+            oculus_dextrus_sphere_cyclorefraction:
+              dataToSend.oculus_dextrus_sphere_cyclorefraction,
+            oculus_dextrus_cylinder_cyclorefraction:
+              dataToSend.oculus_dextrus_cylinder_cyclorefraction,
+            oculus_dextrus_axis_cyclorefraction:
+              dataToSend.oculus_dextrus_axis_cyclorefraction,
+            oculus_sinister_near: dataToSend.oculus_sinister_near,
+            oculus_dextrus_near: dataToSend.oculus_dextrus_near,
+            oculus_ipd: dataToSend.oculus_ipd,
+            oculus_sinister_iop_airpuff: dataToSend.oculus_sinister_iop_airpuff,
+            oculus_sinister_iop_applantation:
+              dataToSend.oculus_sinister_iop_applantation,
+            oculus_sinister_iop_other: dataToSend.oculus_sinister_iop_other,
+            oculus_dextrus_iop_airpuff: dataToSend.oculus_dextrus_iop_airpuff,
+            oculus_dextrus_iop_applantation:
+              dataToSend.oculus_dextrus_iop_applantation,
+            oculus_dextrus_iop_other: dataToSend.oculus_dextrus_iop_other,
+          }),
+        }
+      );
+      const responseData = await response.json();
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Failed");
+    }
+  };
+  const saveOpthalmologyRx = async (visit_id) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/patients/${patient.id}/visits/${visit_id}/ocular-rx`,
+        {
+          method: Object.keys(dataToChange).length != 0 ? "PATCH" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            oculus_sinister_sphere_rx: dataToSend.oculus_sinister_sphere_rx,
+            oculus_sinister_cylinder_rx: dataToSend.oculus_sinister_cylinder_rx,
+            oculus_sinister_axis_rx: dataToSend.oculus_sinister_axis_rx,
+            oculus_sinister_add_rx: dataToSend.oculus_sinister_add_rx,
+            oculus_dextrus_sphere_rx: dataToSend.oculus_dextrus_sphere_rx,
+            oculus_dextrus_cylinder_rx: dataToSend.oculus_dextrus_cylinder_rx,
+            oculus_dextrus_axis_rx: dataToSend.oculus_dextrus_axis_rx,
+            oculus_dextrus_add_rx: dataToSend.oculus_dextrus_add_rx,
+            oculus_ipd_rx: dataToSend.oculus_ipd_rx,
+          }),
+        }
+      );
+      const responseData = await response.json();
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Failed");
+    }
+  };
+  const saveOpthalmologyExamination = async (visit_id) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/patients/${patient.id}/visits/${visit_id}/ocular-examination`,
+        {
+          method: Object.keys(dataToChange).length != 0 ? "PATCH" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            oculus_sinister_external: dataToSend.oculus_sinister_external,
+            oculus_sinister_ant_segment: dataToSend.oculus_sinister_ant_segment,
+            oculus_sinister_post_segment:
+              dataToSend.oculus_sinister_post_segment,
+            oculus_dextrus_external: dataToSend.oculus_dextrus_external,
+            oculus_dextrus_ant_segment: dataToSend.oculus_dextrus_ant_segment,
+            oculus_dextrus_post_segment: dataToSend.oculus_dextrus_post_segment,
+            oculus_sinister_orbits: dataToSend.oculus_sinister_orbits,
+            oculus_dextrus_orbits: dataToSend.oculus_dextrus_orbits,
+            oculus_sinister_eyelids: dataToSend.oculus_sinister_eyelids,
+            oculus_dextrus_eyelids: dataToSend.oculus_dextrus_eyelids,
+            oculus_sinister_ocular_alignment_and_motility:
+              dataToSend.oculus_sinister_ocular_alignment_and_motility,
+            oculus_dextrus_ocular_alignment_and_motility:
+              dataToSend.oculus_dextrus_ocular_alignment_and_motility,
+            oculus_sinister_pupils: dataToSend.oculus_sinister_pupils,
+            oculus_dextrus_pupils: dataToSend.oculus_dextrus_pupils,
+            oculus_sinister_lacrimal_apparatus:
+              dataToSend.oculus_sinister_lacrimal_apparatus,
+            oculus_dextrus_lacrimal_apparatus:
+              dataToSend.oculus_dextrus_lacrimal_apparatus,
+            oculus_sinister_eyelashes_and_lid_margin:
+              dataToSend.oculus_sinister_eyelashes_and_lid_margin,
+            oculus_dextrus_eyelashes_and_lid_margin:
+              dataToSend.oculus_dextrus_eyelashes_and_lid_margin,
+            oculus_sinister_conjunctiva: dataToSend.oculus_sinister_conjunctiva,
+            oculus_dextrus_conjunctiva: dataToSend.oculus_dextrus_conjunctiva,
+            oculus_sinister_sclera: dataToSend.oculus_sinister_sclera,
+            oculus_dextrus_sclera: dataToSend.oculus_dextrus_sclera,
+            oculus_sinister_tear_film: dataToSend.oculus_sinister_tear_film,
+            oculus_dextrus_tear_film: dataToSend.oculus_dextrus_tear_film,
+            oculus_sinister_cornea: dataToSend.oculus_sinister_cornea,
+            oculus_dextrus_cornea: dataToSend.oculus_dextrus_cornea,
+            oculus_sinister_ant_chamber: dataToSend.oculus_sinister_ant_chamber,
+            oculus_dextrus_ant_chamber: dataToSend.oculus_dextrus_ant_chamber,
+            oculus_sinister_ant_chamber_angle:
+              dataToSend.oculus_sinister_ant_chamber_angle,
+            oculus_dextrus_ant_chamber_angle:
+              dataToSend.oculus_dextrus_ant_chamber_angle,
+            oculus_sinister_iris_and_pupil:
+              dataToSend.oculus_sinister_iris_and_pupil,
+            oculus_dextrus_iris_and_pupil:
+              dataToSend.oculus_dextrus_iris_and_pupil,
+            oculus_sinister_lens: dataToSend.oculus_sinister_lens,
+            oculus_dextrus_lens: dataToSend.oculus_dextrus_lens,
+            oculus_sinister_ant_vitreous:
+              dataToSend.oculus_sinister_ant_vitreous,
+            oculus_dextrus_ant_vitreous: dataToSend.oculus_dextrus_ant_vitreous,
+            oculus_sinister_vitreous: dataToSend.oculus_sinister_vitreous,
+            oculus_dextrus_vitreous: dataToSend.oculus_dextrus_vitreous,
+            oculus_sinister_optic_disc: dataToSend.oculus_sinister_optic_disc,
+            oculus_dextrus_optic_disc: dataToSend.oculus_dextrus_optic_disc,
+            oculus_sinister_macula_and_fovea:
+              dataToSend.oculus_sinister_macula_and_fovea,
+            oculus_dextrus_macula_and_fovea:
+              dataToSend.oculus_dextrus_macula_and_fovea,
+            oculus_sinister_retinal_vasculature:
+              dataToSend.oculus_sinister_retinal_vasculature,
+            oculus_dextrus_retinal_vasculature:
+              dataToSend.oculus_dextrus_retinal_vasculature,
+            oculus_sinister_peripheral_retina:
+              dataToSend.oculus_sinister_peripheral_retina,
+            oculus_dextrus_peripheral_retina:
+              dataToSend.oculus_dextrus_peripheral_retina,
           }),
         }
       );
@@ -680,20 +987,8 @@ export function VisitModal({
         }
       );
       const responseData2 = await response2.json();
-      socket.emit("pending-visits", {
-        token: `${localStorage.getItem("token")}`,
-        role: 0,
-        page: 1,
-        size: 100,
-        search: null,
-      });
-      socket.emit("unfinished-visits", {
-        token: `${localStorage.getItem("token")}`,
-        role: 0,
-        page: 1,
-        size: 100,
-        search: null,
-      });
+      socket.emit("pending-visits", { page: 1, size: 100, search: null });
+      socket.emit("unfinished-visits", { page: 1, size: 100, search: null });
       getPatients();
     } catch (error) {
       console.log(error.message);
@@ -729,20 +1024,8 @@ export function VisitModal({
         }
       );
       const responseData2 = await response2.json();
-      socket.emit("pending-visits", {
-        token: `${localStorage.getItem("token")}`,
-        role: 0,
-        page: 1,
-        size: 100,
-        search: null,
-      });
-      socket.emit("unfinished-visits", {
-        token: `${localStorage.getItem("token")}`,
-        role: 0,
-        page: 1,
-        size: 100,
-        search: null,
-      });
+      socket.emit("pending-visits", { page: 1, size: 100, search: null });
+      socket.emit("unfinished-visits", { page: 1, size: 100, search: null });
       getPatients();
     } catch (error) {
       console.log(error.message);
@@ -761,6 +1044,10 @@ export function VisitModal({
       saveStart(visit_id);
       handleLabsDataSend(visit_id);
       savePrescription(visit_id);
+      saveOpthalmologyHx(visit_id);
+      saveOpthalmologyVA(visit_id);
+      saveOpthalmologyRx(visit_id);
+      saveOpthalmologyExamination(visit_id);
       handleEndVisit(visit_id);
       toast.success("Added Successfully");
     }
@@ -780,6 +1067,10 @@ export function VisitModal({
       saveStart(visit_id);
       handleLabsDataSend(visit_id);
       savePrescription(visit_id);
+      saveOpthalmologyHx(visit_id);
+      saveOpthalmologyVA(visit_id);
+      saveOpthalmologyRx(visit_id);
+      saveOpthalmologyExamination(visit_id);
       handlePauseVisit(visit_id);
       toast.success("Added Paused Successfully");
     }
@@ -905,13 +1196,11 @@ export function VisitModal({
           socketGateway={socketGateway}
           setSubscribed={setSubscribed}
         />
-
         <PatientVisitsModal
           patient={patient}
           show={showPatientVisitsModal}
           onHide={() => setShowPatientVisitsModal(false)}
         />
-
         <Modal
           show={showPatientInfoModal}
           onHide={() => setShowPatientInfoModal(false)}
@@ -927,6 +1216,97 @@ export function VisitModal({
           </Modal.Header>
           <Modal.Body className="text-start">
             <Patient patient={patient} showTop={false} />
+          </Modal.Body>
+        </Modal>
+        <Modal
+          show={showOpthalmologyHxModal}
+          onHide={() => {
+            if (dataToChange.id != "") {
+              saveOpthalmologyHx(dataToChange.id);
+            }
+            setShowOpthalmologyHxModal(false);
+          }}
+          size="xl"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+          className=""
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Opthalmology Hx
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-start">
+            <OpthalmologyHxController
+              dataToSend={dataToSend}
+              setDataToSend={setDataToSend}
+              getDiseases={getDiseases}
+              diseases={diseases}
+              family_members={family_members}
+              getSurgeries={getSurgeries}
+              surgeries={surgeries}
+            />
+          </Modal.Body>
+        </Modal>
+        <Modal
+          show={showOpthalmologyVAModal}
+          onHide={() => {
+            if (dataToChange.id != "") {
+              saveOpthalmologyVA(dataToChange.id);
+            }
+            setShowOpthalmologyVAModal(false);
+          }}
+          size="xl"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+          className=""
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Opthalmology VA
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-start">
+            <OpthalmologyVAController
+              dataToSend={dataToSend}
+              setDataToSend={setDataToSend}
+            />
+          </Modal.Body>
+        </Modal>
+        <OpthalmologyRxModal
+          show={showOpthalmologyRxModal}
+          onHide={() => {
+            if (dataToChange.id != "") {
+              saveOpthalmologyRx(dataToChange.id);
+            }
+            setShowOpthalmologyRxModal(false);
+          }}
+          dataToSend={dataToSend}
+          setDataToSend={setDataToSend}
+        />
+        <Modal
+          show={showOpthalmologyExaminationModal}
+          onHide={() => {
+            if (dataToChange.id != "") {
+              saveOpthalmologyExamination(dataToChange.id);
+            }
+            setShowOpthalmologyExaminationModal(false);
+          }}
+          size="xl"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+          className=""
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Opthalmology Examination
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-start">
+            <OpthalmologyExaminationController
+              dataToSend={dataToSend}
+              setDataToSend={setDataToSend}
+            />
           </Modal.Body>
         </Modal>
         <VitalSignsModal
@@ -1134,16 +1514,64 @@ export function VisitModal({
                 </div>
               </>
             )}
-            <div className="col-2">
-              <Button
-                onClick={() => setShowBTModal(true)}
-                className="btn btn-secondary w-100"
-              >
-                BMI Tracker
-              </Button>
-            </div>
+            {JSON.parse(fs.readFileSync(Settings, "utf8")).bmiTracker ? (
+              <div className="col-2">
+                <Button
+                  onClick={() => setShowBTModal(true)}
+                  className="btn btn-secondary w-100"
+                >
+                  BMI Tracker
+                </Button>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
+        {JSON.parse(fs.readFileSync(Settings, "utf8")).opthalmology ? (
+          <div className="col-12">
+            <div className="row justify-content-center">
+              <div className="col-2">
+                <Button
+                  onClick={() => {
+                    setShowOpthalmologyHxModal(true);
+                  }}
+                  className="btn btn-primary w-100"
+                >
+                  Opthalmology Hx
+                </Button>
+              </div>
+              <div className="col-2">
+                <Button
+                  onClick={() => {
+                    setShowOpthalmologyVAModal(true);
+                  }}
+                  className="btn btn-primary w-100"
+                >
+                  Opthalmology VA
+                </Button>
+              </div>
+              <div className="col-2">
+                <Button
+                  onClick={() => setShowOpthalmologyRxModal(true)}
+                  className="btn btn-secondary w-100"
+                >
+                  Opthalmology Rx
+                </Button>
+              </div>
+              <div className="col-2">
+                <Button
+                  onClick={() => setShowOpthalmologyExaminationModal(true)}
+                  className="btn btn-secondary w-100"
+                >
+                  Opthalmology Ex.
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
         <div className="col-12">
           <div className="row justify-content-center">
             <div className="col-2">

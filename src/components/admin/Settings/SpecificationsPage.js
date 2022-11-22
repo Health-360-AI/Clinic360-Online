@@ -28,6 +28,12 @@ function SpecificationsPage({ specifications, setSpecifications }) {
   const [scanType, setScanType] = useState(
     JSON.parse(fs.readFileSync(Settings, "utf8")).scanType
   );
+  const [opthalmology, setOpthalmology] = useState(
+    JSON.parse(fs.readFileSync(Settings, "utf8")).opthalmology
+  );
+  const [bmiTracker, setBMITracker] = useState(
+    JSON.parse(fs.readFileSync(Settings, "utf8")).bmiTracker
+  );
   const [bert, setBert] = useState(
     JSON.parse(fs.readFileSync(Settings, "utf8")).bert
   );
@@ -65,6 +71,20 @@ function SpecificationsPage({ specifications, setSpecifications }) {
     //write file
     fs.writeFileSync(Settings, JSON.stringify(content));
     setScanType(e.target.checked == true ? 1 : 0);
+  };
+  const handleOpthalmologyChange = (e) => {
+    let content = JSON.parse(fs.readFileSync(Settings, "utf8"));
+    content.opthalmology = e.target.checked == true ? 1 : 0;
+    //write file
+    fs.writeFileSync(Settings, JSON.stringify(content));
+    setOpthalmology(e.target.checked == true ? 1 : 0);
+  };
+  const handleBMITrackerChange = (e) => {
+    let content = JSON.parse(fs.readFileSync(Settings, "utf8"));
+    content.bmiTracker = e.target.checked == true ? 1 : 0;
+    //write file
+    fs.writeFileSync(Settings, JSON.stringify(content));
+    setBMITracker(e.target.checked == true ? 1 : 0);
   };
   const handleRemoveBertButton = () => {
     let content = JSON.parse(fs.readFileSync(Settings, "utf8"));
@@ -144,6 +164,40 @@ function SpecificationsPage({ specifications, setSpecifications }) {
           htmlFor="scanType"
         >
           Scan As PDF
+        </label>
+      </div>
+      <div className="row m-0 p-4">
+        <div className="col-1 pe-0">
+          <input
+            id="opthalmology"
+            className="form-check-input"
+            type="checkbox"
+            checked={opthalmology == 1 ? true : false}
+            onChange={handleOpthalmologyChange}
+          />
+        </div>
+        <label
+          className="form-check-label col-form-label pt-0 col-5 ps-0"
+          htmlFor="scanType"
+        >
+          Opthalmology
+        </label>
+      </div>
+      <div className="row m-0 p-4">
+        <div className="col-1 pe-0">
+          <input
+            id="bmiTracker"
+            className="form-check-input"
+            type="checkbox"
+            checked={bmiTracker == 1 ? true : false}
+            onChange={handleBMITrackerChange}
+          />
+        </div>
+        <label
+          className="form-check-label col-form-label pt-0 col-5 ps-0"
+          htmlFor="scanType"
+        >
+          BMI Tracker
         </label>
       </div>
       {/* {bert ? (

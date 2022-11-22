@@ -216,6 +216,7 @@ function LatestPending({
         ...visitModal,
         show: true,
         visit: {
+          ...xx,
           visit_id: xx.id,
           chief_complaint_id: xx.chief_complaint_id,
           chief_complaint_note: xx.chief_complaint_note,

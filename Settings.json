@@ -15,5 +15,7 @@
   "rightMargin": "2",
   "leftMargin": "5",
   "scanType": 0,
-  "runTime": 0
+  "opthalmology": 0,
+  "bmiTracker": 0,
+  "runTime": 24
 }

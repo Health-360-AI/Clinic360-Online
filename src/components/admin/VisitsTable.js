@@ -4,9 +4,28 @@ import ConfirmModal from "../common/ConfirmModal";
 import { toast } from "react-toastify";
 import { VisitModal } from "./VisitModal";
 import FileModal from "../common/FileModal";
+import { Modal } from "react-bootstrap";
 import FileModalView from "../common/FileModalView";
+import OpthalmologyHx from "./OpthalmologyView/OpthalmologyHx";
+import OpthalmologyVA from "./OpthalmologyView/OpthalmologyVA";
+import OpthalmologyRxModal from "./OpthalmologyView/OpthalmologyRxModal";
+import OpthalmologyExamination from "./OpthalmologyView/OpthalmologyExamination";
 
+let fs = require("fs");
+const path = require("path");
 const apiUrl = process.env.API_URL;
+
+let LOCALAPPDATA =
+  process.platform !== "darwin"
+    ? process.env.LOCALAPPDATA
+    : path.join(process.env.HOME, "Library", "Application Support");
+let Settings;
+if (process.env.NODE_ENV == "development") {
+  Settings = "./Settings.json";
+} else {
+  Settings = LOCALAPPDATA + "/clinic360/Settings.json";
+}
+
 function VisitsTable({
   patient,
   speech,
@@ -35,6 +54,15 @@ function VisitsTable({
       trade_drugs: [],
     },
   });
+  const [family_members, setFamilyMembers] = useState([]);
+
+  const [showOpthalmologyHxModal, setShowOpthalmologyHxModal] = useState(false);
+  const [showOpthalmologyVAModal, setShowOpthalmologyVAModal] = useState(false);
+  const [showOpthalmologyRxModal, setShowOpthalmologyRxModal] = useState(false);
+  const [
+    showOpthalmologyExaminationModal,
+    setShowOpthalmologyExaminationModal,
+  ] = useState(false);
   const [loading, setLoading] = useState(true);
   const [visits, setVisits] = useState([]);
   const [dataToChange, setDataToChange] = useState({ id: "" });
@@ -119,17 +147,7 @@ function VisitsTable({
         for (let i = 0; i < responseData.visits.length; i++) {
           let receivedV = await getVisit(responseData.visits[i]);
           console.log(receivedV);
-          visitss[i]["date"] = receivedV.date;
-          visitss[i]["chief_complaint_id"] = receivedV.chief_complaint_id;
-          visitss[i]["chief_complaint_name"] = receivedV.chief_complaint_name;
-          visitss[i]["chief_complaint_note"] = receivedV.chief_complaint_note;
-          visitss[i]["prescription_note"] = receivedV.prescription_note;
-          visitss[i]["hopi"] = receivedV.hopi;
-          visitss[i]["investigations"] = receivedV.investigations;
-          visitss[i]["diagnosis_id"] = receivedV.diagnosis_id;
-          visitss[i]["diagnosis_name"] = receivedV.diagnosis_name;
-          visitss[i]["trade_drugs"] = receivedV.trade_drugs;
-          visitss[i]["scientific_drugs"] = receivedV.scientific_drugs;
+          visitss[i] = { ...receivedV };
         }
       }
       setVisits(visitss);
@@ -138,8 +156,24 @@ function VisitsTable({
     }
   };
 
+  const getFamilyMembers = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/family-members`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const responseData = await response.json();
+      setFamilyMembers(responseData.family_members);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   useEffect(() => {
     getVisits();
+
+    getFamilyMembers();
     setLoading(false);
   }, []);
 
@@ -236,6 +270,74 @@ function VisitsTable({
           photos={photos}
         />
       )}
+
+      <Modal
+        show={showOpthalmologyHxModal}
+        onHide={() => {
+          setShowOpthalmologyHxModal(false);
+        }}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        className=""
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Opthalmology Hx
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-start">
+          <OpthalmologyHx
+            {...visitModal.visit}
+            family_members={family_members}
+          />
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={showOpthalmologyVAModal}
+        onHide={() => {
+          setShowOpthalmologyVAModal(false);
+        }}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        className=""
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Opthalmology VA
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-start">
+          <OpthalmologyVA {...visitModal.visit} />
+        </Modal.Body>
+      </Modal>
+      <OpthalmologyRxModal
+        show={showOpthalmologyRxModal}
+        onHide={() => {
+          setShowOpthalmologyRxModal(false);
+        }}
+        {...visitModal.visit}
+      />
+      <Modal
+        show={showOpthalmologyExaminationModal}
+        onHide={() => {
+          setShowOpthalmologyExaminationModal(false);
+        }}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        className=""
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Opthalmology Examination
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-start">
+          <OpthalmologyExamination {...visitModal.visit} />
+        </Modal.Body>
+      </Modal>
       <div className="row m-0 justify-content-center">
         <div className="col-12">
           <div className="row pe-2 ps-2 mb-2">
@@ -288,7 +390,13 @@ function VisitsTable({
                       <th className="age-width">Chief Complaint</th>
                       <th className="gender-width">Note</th>
                       <th className="job-width">History of Present Illness</th>
-                      <th className="job-width">Investigations</th>
+                      <th className="">Investigations</th>
+                      {JSON.parse(fs.readFileSync(Settings, "utf8"))
+                        .opthalmology ? (
+                        <th className="">Opthalmology Exam</th>
+                      ) : (
+                        ""
+                      )}
                       <th className="province-width">Diagnosis</th>
                       <th className="address-width">Trade Names</th>
                       <th className="phone-width">Scientific Names</th>
@@ -310,7 +418,7 @@ function VisitsTable({
                               {visit.chief_complaint_note}
                             </td>
                             <td className="job-width">{visit.hopi}</td>
-                            <td className="job-width">
+                            <td className="">
                               {visit.investigations.map((lab, index) => {
                                 return (
                                   <p
@@ -327,6 +435,66 @@ function VisitsTable({
                                 );
                               })}
                             </td>
+                            {JSON.parse(fs.readFileSync(Settings, "utf8"))
+                              .opthalmology ? (
+                              <td className="text-center">
+                                <button
+                                  className="btn btn-secondary m-1"
+                                  onClick={(e) => {
+                                    setDataToChange({ id: visit.id });
+                                    setVisitModal({
+                                      ...visitModal,
+                                      visit,
+                                    });
+                                    setShowOpthalmologyHxModal(true);
+                                  }}
+                                >
+                                  Hx
+                                </button>
+                                <button
+                                  className="btn btn-secondary m-1"
+                                  onClick={(e) => {
+                                    setDataToChange({ id: visit.id });
+                                    setVisitModal({
+                                      ...visitModal,
+                                      visit,
+                                    });
+                                    setShowOpthalmologyVAModal(true);
+                                  }}
+                                >
+                                  VA
+                                </button>
+                                <br />
+                                <button
+                                  className="btn btn-secondary m-1"
+                                  onClick={(e) => {
+                                    setDataToChange({ id: visit.id });
+                                    setVisitModal({
+                                      ...visitModal,
+                                      visit,
+                                    });
+                                    setShowOpthalmologyExaminationModal(true);
+                                  }}
+                                >
+                                  Exam
+                                </button>
+                                <button
+                                  className="btn btn-secondary m-1"
+                                  onClick={(e) => {
+                                    setDataToChange({ id: visit.id });
+                                    setVisitModal({
+                                      ...visitModal,
+                                      visit,
+                                    });
+                                    setShowOpthalmologyRxModal(true);
+                                  }}
+                                >
+                                  Rx
+                                </button>
+                              </td>
+                            ) : (
+                              ""
+                            )}
                             <td className="province-width">
                               {visit.diagnosis_name}
                             </td>
@@ -402,6 +570,8 @@ function VisitsTable({
                   diagnosis_id: null,
                   scientific_drugs: [],
                   trade_drugs: [],
+                  family_history: [],
+                  past_surgical_history: [],
                 },
               });
             }}
