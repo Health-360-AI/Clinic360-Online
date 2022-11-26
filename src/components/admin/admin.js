@@ -498,6 +498,7 @@ function admin({
                     handleOperationsButton={handleOperationsButton}
                     setShowPending={setShowPending}
                     emitSocket={emitSocket}
+                    setSubscribed={setSubscribed}
                   />
                 </div>
               </>

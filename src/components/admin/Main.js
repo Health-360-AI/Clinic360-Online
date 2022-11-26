@@ -27,7 +27,12 @@ const barOptions = {
   maintainAspectRatio: false,
 };
 
-function Main({ handleOperationsButton, setShowPending, emitSocket }) {
+function Main({
+  handleOperationsButton,
+  setShowPending,
+  emitSocket,
+  setSubscribed,
+}) {
   const [main, setMain] = useState({
     total_patients: 0,
     new_patients: 0,
@@ -52,29 +57,37 @@ function Main({ handleOperationsButton, setShowPending, emitSocket }) {
           },
         });
         let responseData = await response.json();
-        responseData.top_diseases.labels = responseData.top_diseases.labels.map(
-          (label) => {
-            return label.slice(0, 15);
-          }
-        );
-        responseData.top_chief_complaints.labels =
-          responseData.top_chief_complaints.labels.map((label) => {
-            return label.slice(0, 15);
+        if (responseData.success) {
+          responseData.top_diseases.labels =
+            responseData.top_diseases.labels.map((label) => {
+              return label.slice(0, 15);
+            });
+          responseData.top_chief_complaints.labels =
+            responseData.top_chief_complaints.labels.map((label) => {
+              return label.slice(0, 15);
+            });
+          setMain({
+            ...main,
+            total_patients: responseData.total_patients,
+            new_patients: responseData.new_patients,
+            attended_patients: responseData.attended_patients,
+            pending_patients: responseData.pending_patients,
+            pending_operations: responseData.pending_operations,
+            unfinished_visits: responseData.unfinished_visits,
+            female_percentage: responseData.female_percentage,
+            male_percentage: responseData.male_percentage,
+            visits_year: responseData.visits_year,
+            top_diseases: responseData.top_diseases,
+            top_chief_complaints: responseData.top_chief_complaints,
           });
-        setMain({
-          ...main,
-          total_patients: responseData.total_patients,
-          new_patients: responseData.new_patients,
-          attended_patients: responseData.attended_patients,
-          pending_patients: responseData.pending_patients,
-          pending_operations: responseData.pending_operations,
-          unfinished_visits: responseData.unfinished_visits,
-          female_percentage: responseData.female_percentage,
-          male_percentage: responseData.male_percentage,
-          visits_year: responseData.visits_year,
-          top_diseases: responseData.top_diseases,
-          top_chief_complaints: responseData.top_chief_complaints,
-        });
+        } else {
+          if (responseData.status_code == 401) {
+            localStorage.removeItem("subscribed");
+            localStorage.removeItem("token");
+            ipcRenderer.send("logout");
+            setSubscribed(false);
+          }
+        }
       } catch (error) {
         console.log(error.message);
       }

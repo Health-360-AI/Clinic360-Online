@@ -55,18 +55,18 @@ const HomePage = (props) => {
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
 
-  // useEffect(() => {
-  //   socket.on("broadcast", (data) => {
-  //     console.log(data);
-  //     if (data !== null) {
-  //       setMessageReceived(data.message);
-  //       // setMessageHistory((prev) => prev.concat(lastJsonMessage));
-  //       // console.log(lastJsonMessage);
-  //       if (data.user != 0)
-  //         addResponseMessage(new Buffer(data.message, "base64").toString());
-  //     }
-  //   });
-  // }, [socket]);
+  useEffect(() => {
+    socketGateway.on("doctor_message", (data) => {
+      console.log(data);
+      if (data !== null) {
+        setMessageReceived(data.message);
+        // setMessageHistory((prev) => prev.concat(lastJsonMessage));
+        // console.log(lastJsonMessage);
+        if (data.user != 0)
+          addResponseMessage(new Buffer(data.message, "base64").toString());
+      }
+    });
+  }, [socketGateway]);
 
   const getUserInfo = async () => {
     try {
@@ -188,18 +188,22 @@ const HomePage = (props) => {
     addResponseMessage("Welcome to this awesome chat!");
   }, []);
 
-  // const handleClickSendMessage = useCallback((message) => {
-  //   socket.emit("broadcast", {
-  //     message: new Buffer(message).toString("base64"),
-  //     user: 0,
-  //   });
-  //   // sendJsonMessage({ message, user: 0 });
-  //   // addResponseMessage(message);
-  // }, []);
-  // const handleClickBell = () => {
-  //   socket.emit("broadcast", { buzz: 1, user: 0 });
-  // };
-
+  const handleClickSendMessage = useCallback((message) => {
+    socketGateway.emit("send_message_to_secretary", {
+      token: `${localStorage.getItem("token")}`,
+      message: new Buffer(message).toString("base64"),
+      user: 0,
+    });
+    // sendJsonMessage({ message, user: 0 });
+    // addResponseMessage(message);
+  }, []);
+  const handleClickBell = () => {
+    socketGateway.emit("send_message_to_secretary", {
+      token: `${localStorage.getItem("token")}`,
+      buzz: 1,
+      user: 0,
+    });
+  };
   if (loading) {
     return (
       <div
@@ -242,7 +246,7 @@ const HomePage = (props) => {
             socket={socketGateway}
             socketGateway={socketGateway}
           />
-          {/* <div className={`notification-square`}>
+          <div className={`notification-square`}>
             <div className="bell-div" onClick={handleClickBell}>
               <FontAwesomeIcon icon="bell" className="bell" />
             </div>
@@ -257,7 +261,7 @@ const HomePage = (props) => {
               emojis
               showBadge
             />
-          </div> */}
+          </div>
         </>
       );
     } else {
