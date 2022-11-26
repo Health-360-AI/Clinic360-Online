@@ -56,6 +56,13 @@ function Main({
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        if (response.status == 401) {
+          localStorage.removeItem("subscribed");
+          localStorage.removeItem("token");
+          ipcRenderer.send("logout");
+          setSubscribed(false);
+          return;
+        }
         let responseData = await response.json();
         if (responseData.success) {
           responseData.top_diseases.labels =
@@ -80,13 +87,6 @@ function Main({
             top_diseases: responseData.top_diseases,
             top_chief_complaints: responseData.top_chief_complaints,
           });
-        } else {
-          if (responseData.status_code == 401) {
-            localStorage.removeItem("subscribed");
-            localStorage.removeItem("token");
-            ipcRenderer.send("logout");
-            setSubscribed(false);
-          }
         }
       } catch (error) {
         console.log(error.message);
